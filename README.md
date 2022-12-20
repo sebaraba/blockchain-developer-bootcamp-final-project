@@ -53,3 +53,32 @@ The first folder we see is packages folder. We can find the two main sub-directo
 
 ## About
 
+### I. Abstract
+
+The abundance of distressful events that took place around the world in recent years have brought light to the fragile state our society’s peace and stable development. 
+In the past 2 years we have witnessed a fierce full pandemic that has killed hundreds of thousands. We have seen war in Europe for the first time since the end of WWII. As well as we know we are running fast towards a global crisis that can span over a long period of time and sectors. 
+Apart from the economic crisis that is due to come, there are a few other sectors that are not as well promoted, such as: energetic sector, food sector as well as clean water sector.
+The subject of this writing will focus on the matter of the food crisis that I personally believe will unfortunately come as we proceed further into the near future. It is indeed a personal view, maybe a pessimistic one as well, but if we look around, we can spot various signs of it approaching.
+Matters such as, global warming, war in Ukraine, economic crisis, sanitary crisis spanning over human, but animal health as well, pay all their part into an upcoming food crisis.
+As history has taught as so far, after long social development, many consecutive years of economic growth and peace around the world, crisis come. But most importantly a big result of these crisis is usually a reform in the way we do things, and I would like to contribute to a solution to one of the problems that will haul food production.  
+The subject of this project is composed of a system that comes as means of enhanced accessibility for people willing to support local producers of whole foods. All these by enabling them to contact local producers and seek for vegetables/fruits and meat they produce and commonly contribute to help finance their production process using a web application and blockchain infrastructure for payments and rights management.
+
+
+
+
+### II. Problem definition
+
+Starting from climate change implications the industrial agriculture process has and going down the route of extremely crowded supply chains, food waste problems and lack of raw materials, there are many failing points of the current industrial way of processing and distributing food around the world. 
+
+Therefore, a reform is due to come, if we want to live sustainably with the lowest implications on the climate, but also consuming quality food and enabling the coming generations to thrive towards even more human society development.
+
+This project’s aim is to bring to the table a means of accessibility to goods local producers provide to people living in their surroundings. A system where people can budge in and combine their monetary resources in order to enable local producers to sustain their whole agriculture activities throughout the year.
+
+A big problem the locals currently face is that they cannot profit from economy of scale because of the small volume they produce. Currently small volume impacts profitability on two dimensions. 
+First, the matter of production price per unit which is sensibly higher than what industrialized agriculture players can offer.  This drives key accounts attention away from trying to offer local products in the supermarkets. Also, it makes it hard for all types of consumers to have access to good quality products.
+Secondly there is the problem of distribution. Often distribution costs can overtake the price per unit at the time distributors buy from producers. 
+That is mainly because in order to fill a truck with any sorts of goods they would need to have many suppliers who are distributed across the region. So extra trips each truck needs to make to pick up the goods result in higher transportation costs per unit. 
+
+On another note, the business model in agriculture is fairly old and can profit from the modern ways of cost sharing. That is because the amount of time that food needs in production phase is very long and costly at the same time. Currently when thinking of a local producer raising pork for example, we identify a production period of around 7 months. Months when the farmer needs to support all costs for food, health and accommodation of the animal. Eventually after 7 months they will sell the product, hopefully with profit, that is to be used to buy another batch of piglets and sustain their growth until the time they can be sold again. 
+
+Considering the aforementioned problems, it is clear there is a lot of space to improve. Agriculture is a sector where informatics and technology didn’t yet boom, and I foresee a bright future in implementing digitalized solutions for food production and distribution. Just like we did with industrial production of clothes and shoes for example. 
