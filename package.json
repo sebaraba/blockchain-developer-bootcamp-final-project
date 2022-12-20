@@ -10,6 +10,7 @@
   ],
   "private": true,
   "scripts": {
+    "clean": "cd packages/hardhat && npx hardhat clean",
     "chain": "yarn workspace @final-project/hardhat chain",
     "test": "yarn workspace @final-project/hardhat test",
     "start": "yarn workspace @final-project/react-app start",

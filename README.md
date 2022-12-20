@@ -38,7 +38,7 @@ The first folder we see is packages folder. We can find the two main sub-directo
 
 1. Hardhat
 
-    Wich is the place where smart contract codes are placed. Currently there are a total of two Smart contracts, namely: `Stake.sol` and `ExampleExternalContract.sol`. Both of them have been written using solidity version `8.4.0`.
+    Wich is the place where smart contract codes are placed. Currently there are a total of two Smart contracts, namely: `Stake.sol` and `ExternalContract.sol`. Both of them have been written using solidity version `8.4.0`.
 
     Apart from smart contracts' code there are configurations for hardhat connection to different types of test net rpc nodes.
 
