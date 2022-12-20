@@ -38,5 +38,18 @@ The first folder we see is packages folder. We can find the two main sub-directo
 
 1. Hardhat
 
-    Wich is the place where smart contract codes are placed.
-    Apart from smart contracts
+    Wich is the place where smart contract codes are placed. Currently there are a total of two Smart contracts, namely: `Stake.sol` and `ExampleExternalContract.sol`. Both of them have been written using solidity version `8.4.0`.
+
+    Apart from smart contracts' code there are configurations for hardhat connection to different types of test net rpc nodes.
+
+    Also in the package.json file we have defined a way to `deploy` your smart contract and run a local `chain` using `yarn`.
+
+2. React-app
+
+    That is the folder where the client side of the application resides. We have built a small scale react web application to connect to the local chain [for now, will be updated to connect to goerli in the following weeks]. 
+
+    Using the deployment addresses of the two contracts and `react-hooks` in order to query the contract and transact with it.
+
+
+## About
+
