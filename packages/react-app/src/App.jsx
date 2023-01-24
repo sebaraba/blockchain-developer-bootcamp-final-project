@@ -1,7 +1,7 @@
 import WalletConnectProvider from "@walletconnect/web3-provider";
 //import Torus from "@toruslabs/torus-embed"
 import WalletLink from "walletlink";
-import { Alert, Button, Col, Menu, Row, List, Divider } from "antd";
+import { Alert, Button, Col, Menu, Row, List, Divider, InputNumber } from "antd";
 import "antd/dist/antd.css";
 import React, { useCallback, useEffect, useState } from "react";
 import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
@@ -153,6 +153,7 @@ function App(props) {
 
   const [injectedProvider, setInjectedProvider] = useState();
   const [address, setAddress] = useState();
+  const [stakeAmount, setStakeAmount] = useState();
 
   const logoutOfWeb3Modal = async () => {
     await web3Modal.clearCachedProvider();
@@ -556,10 +557,21 @@ function App(props) {
             </div>
 
             <div style={{ padding: 8 }}>
+              <InputNumber
+                style={{ width: "160px" }}
+                size="large"
+                min={0}
+                value={stakeAmount}
+                onChange={e => {
+                  setStakeAmount(e);
+                  console.log(stakeAmount);
+                }}
+              />
               <Button
                 type={balanceStaked ? "success" : "primary"}
                 onClick={() => {
-                  tx(writeContracts.Staker.stake({ value: ethers.utils.parseEther("0.5") }));
+                  console.log(stakeAmount.toString());
+                  tx(writeContracts.Staker.stake({ value: ethers.utils.parseEther(stakeAmount.toString()) }));
                 }}
               >
                 🥩 Stake 0.5 ether!
