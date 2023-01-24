@@ -10,10 +10,11 @@ contract Staker {
   
   mapping(address => uint256) public balances;
   mapping(address => uint256) public depositTimestamps;
+  uint256 public constant threshold = 1 ether;
 
   uint256 public constant rewardRatePerBlock = 0.1 ether;
-  uint256 public withdrawalDeadline = block.timestamp + 120 seconds;
-  uint256 public claimDeadline = block.timestamp + 240 seconds;
+  uint256 public withdrawalDeadline = block.timestamp + 60 seconds;
+  uint256 public claimDeadline = block.timestamp + 120 seconds;
   uint256 public currentBlock = 0;
 
   // Events
@@ -56,6 +57,12 @@ contract Staker {
     require(!completed, "Stake already completed!");
     _;
   }
+
+  modifier tresholdReached() {
+    bool treshHoldReached = address(this).balance > threshold;
+    require(!treshHoldReached, "Trashold not reached");
+    _;
+  }
   
   constructor(address externalContractAddress) {
       externalContract = ExternalContract(externalContractAddress);
@@ -72,13 +79,16 @@ contract Staker {
     Withdraw function for a user to remove their staked ETH inclusive
     of both principal and any accrued interest
   */
-  function withdraw() public withdrawalDeadlineReached(true) claimDeadlineReached(false) notCompleted () {
+  function withdraw() public withdrawalDeadlineReached(true) notCompleted () {
     require(balances[msg.sender] > 0, "You have nothing to withdraw!");
     uint256 individualBalance = balances[msg.sender];
-    uint256 individualBalancesRewards = individualBalance + ((block.timestamp - depositTimestamps[msg.sender]) * rewardRatePerBlock);
     balances[msg.sender] = 0;
 
-    (bool sent, bytes memory data) = msg.sender.call{value: individualBalancesRewards}("");
+    //TODO: discard for now as no reward mechanism has been implemented
+    //(bool sent, bytes memory data) = msg.sender.call{value: individualBalancesRewards}("");
+    //uint256 individualBalancesRewards = individualBalance + ((block.timestamp - depositTimestamps[msg.sender]) * rewardRatePerBlock);
+
+    (bool sent,) = msg.sender.call{value: individualBalance}("");
     require(sent, "There was an error in the attempt to withdraw");
   }
 
@@ -86,8 +96,10 @@ contract Staker {
     Allows any user to repatriate "unproductive" funds that are left in the staking contract
     past the defined withdrawal period
   */
-  function execute() public claimDeadlineReached(true) notCompleted {
+  function execute() public claimDeadlineReached(true) notCompleted tresholdReached {
     uint256 contractBalance = address(this).balance;
+    require(contractBalance > threshold, "The expected amount of eth has not been raised!");
+    
     externalContract.complete{value: address(this).balance}();
   }
 
