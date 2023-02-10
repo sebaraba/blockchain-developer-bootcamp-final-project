@@ -13,8 +13,8 @@ contract Staker {
   uint256 public constant threshold = 1 ether;
 
   uint256 public constant rewardRatePerBlock = 0.1 ether;
-  uint256 public withdrawalDeadline = block.timestamp + 60 seconds;
-  uint256 public claimDeadline = block.timestamp + 120 seconds;
+  uint256 public withdrawalDeadline = block.timestamp + 120 seconds;
+  uint256 public claimDeadline = block.timestamp + 220 seconds;
   uint256 public currentBlock = 0;
 
   // Events
@@ -60,7 +60,7 @@ contract Staker {
 
   modifier tresholdReached() {
     bool treshHoldReached = address(this).balance > threshold;
-    require(!treshHoldReached, "Trashold not reached");
+    require(treshHoldReached, "Trashold not reached");
     _;
   }
   
