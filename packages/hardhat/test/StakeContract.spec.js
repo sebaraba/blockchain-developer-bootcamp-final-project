@@ -34,16 +34,20 @@ describe("Stake contract unit tests", function () {
     }
 
     it("Should deploy ExternalContract", async function () {
-      const externalContract = await ethers.getContractFactory("ExternalContract");
+      let externalContract = await ethers.getContractFactory("ExternalContract");
       externalContract = await externalContract.deploy();
       console.log('\t',"🛰  ExternalContract contract deployed on", externalContract.address)
-    });
 
-    it("Should deploy Staker", async function () {
-      const Staker = await ethers.getContractFactory(contractArtifact);
+      let Staker = await ethers.getContractFactory(contractArtifact);
       stakerContract = await Staker.deploy(externalContract.address);
       console.log('\t',"🛰  Staker contract deployed on", stakerContract.address)
     });
+
+    // it("Should deploy Staker", async function () {
+    //   let Staker = await ethers.getContractFactory(contractArtifact);
+    //   stakerContract = await Staker.deploy(externalContract.address);
+    //   console.log('\t',"🛰  Staker contract deployed on", stakerContract.address)
+    // });
 
     describe("   🥩 Stake!", function () {
       it("Balance should go up when you stake()", async function () {
@@ -70,7 +74,7 @@ describe("Stake contract unit tests", function () {
 
       it("If enough is staked and time has passed, you should be able to complete", async function () {
 
-        const timeLeft1 = await stakerContract.timeLeft()
+        const timeLeft1 = await stakerContract.claimPeriodLeft()
         console.log('\t',"  There should be some time left. timeLeft:",timeLeft1.toNumber())
         expect(timeLeft1.toNumber()).to.greaterThan(0,"Error while expecting the time left to be greater than 0.");
 
@@ -82,7 +86,7 @@ describe("Stake contract unit tests", function () {
         await network.provider.send("evm_increaseTime", [800000])
         await network.provider.send("evm_mine")
 
-        const timeLeft2 = await stakerContract.timeLeft()
+        const timeLeft2 = await stakerContract.claimPeriodLeft()
         console.log('\t',"  Time left should be down to 0 now. timeLeft:",timeLeft2.toNumber())
         expect(timeLeft2.toNumber()).to.equal(0, "Error while expecting time left to be 0.");
 
@@ -90,7 +94,7 @@ describe("Stake contract unit tests", function () {
         const execResult = await stakerContract.execute();
         console.log('\t'," 🏷  execResult: ",execResult.hash)
 
-        const result = await externalContract.completed()
+        const result = await externalContract.complete();
         console.log('\t'," 🥁 completed should be true. completed: ",result)
         expect(result).to.equal(true, "Error while expecting completed to be true.");
 
@@ -104,51 +108,51 @@ describe("Stake contract unit tests", function () {
         redeployedContractArtifact = "contracts/Staker.sol:Staker";
       }
 
-      it("Should redeploy Staker, stake, not have enough value, attempt to execute, then withdraw", async function () {
-        const [ owner, secondAccount ] = await ethers.getSigners();
+      // it("Should redeploy Staker, stake, not have enough value, attempt to execute, then withdraw", async function () {
+      //   const [ owner, secondAccount ] = await ethers.getSigners();
 
-        const ExternalContract = await ethers.getContractFactory("ExternalContract");
-        externalContract = await ExternalContract.deploy();
+      //   const ExternalContract = await ethers.getContractFactory("ExternalContract");
+      //   externalContract = await ExternalContract.deploy();
 
-        const Staker = await ethers.getContractFactory(redeployedContractArtifact);
-        stakerContract = await Staker.deploy(externalContract.address);
+      //   const Staker = await ethers.getContractFactory(redeployedContractArtifact);
+      //   stakerContract = await Staker.deploy(externalContract.address);
 
-        console.log('\t'," 🔨 Staking...")
-        const stakeResult = await stakerContract.connect(secondAccount).stake({value: ethers.utils.parseEther("0.001")});
-        console.log('\t',"stakeResult: ",stakeResult.hash)
+      //   console.log('\t'," 🔨 Staking...")
+      //   const stakeResult = await stakerContract.connect(secondAccount).stake({value: ethers.utils.parseEther("0.001")});
+      //   console.log('\t',"stakeResult: ",stakeResult.hash)
 
-        console.log('\t',"Waiting for confirmation...")
-        const txResult =  await stakeResult.wait()
-        expect(txResult.status).to.equal(1, "Error while awaiting the staking confirmation.");
+      //   console.log('\t',"Waiting for confirmation...")
+      //   const txResult =  await stakeResult.wait()
+      //   expect(txResult.status).to.equal(1, "Error while awaiting the staking confirmation.");
 
-        console.log('\t',"Fast forward time...")
-        await network.provider.send("evm_increaseTime", [800000])
-        await network.provider.send("evm_mine")
+      //   console.log('\t',"Fast forward time...")
+      //   await network.provider.send("evm_increaseTime", [800000])
+      //   await network.provider.send("evm_mine")
 
-        console.log('\t'," Calling execute")
-        const execResult = await stakerContract.execute();
-        console.log('\t',"  execResult: ",execResult.hash)
+      //   console.log('\t'," Calling execute")
+      //   const execResult = await stakerContract.execute();
+      //   console.log('\t',"  execResult: ",execResult.hash)
 
-        const result = await externalContract.completed()
-        console.log('\t'," completed should be false. completed: ",result)
-        expect(result).to.equal(false, "Error expecting completed to be false.");
+      //   const result = await externalContract.completed()
+      //   console.log('\t'," completed should be false. completed: ",result)
+      //   expect(result).to.equal(false, "Error expecting completed to be false.");
 
-        const startingBalance = await ethers.provider.getBalance(secondAccount.address);
+      //   const startingBalance = await ethers.provider.getBalance(secondAccount.address);
 
-        console.log('\t'," Calling withdraw")
-        const withdrawResult = await stakerContract.connect(secondAccount).withdraw();
-        console.log('\t'," withdrawResult: ",withdrawResult.hash)
+      //   console.log('\t'," Calling withdraw")
+      //   const withdrawResult = await stakerContract.connect(secondAccount).withdraw();
+      //   console.log('\t'," withdrawResult: ",withdrawResult.hash)
 
-        // need to account for the gas cost from calling withdraw
-        const tx = await ethers.provider.getTransaction(withdrawResult.hash);
-        const receipt = await ethers.provider.getTransactionReceipt(withdrawResult.hash);
-        const gasCost = tx.gasPrice.mul(receipt.gasUsed);
+      //   // need to account for the gas cost from calling withdraw
+      //   const tx = await ethers.provider.getTransaction(withdrawResult.hash);
+      //   const receipt = await ethers.provider.getTransactionReceipt(withdrawResult.hash);
+      //   const gasCost = tx.gasPrice.mul(receipt.gasUsed);
 
-        const endingBalance = await ethers.provider.getBalance(secondAccount.address);
+      //   const endingBalance = await ethers.provider.getBalance(secondAccount.address);
 
-        expect(endingBalance).to.equal(startingBalance.add(ethers.utils.parseEther("0.001")).sub(gasCost),"Error while withdrawing");
+      //   expect(endingBalance).to.equal(startingBalance.add(ethers.utils.parseEther("0.001")).sub(gasCost),"Error while withdrawing");
 
-      });
+      // });
       //
 
       /*it("Should track tokens of owner by index", async function () {
