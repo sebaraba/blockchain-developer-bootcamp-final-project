@@ -82,3 +82,27 @@ That is mainly because in order to fill a truck with any sorts of goods they wou
 On another note, the business model in agriculture is fairly old and can profit from the modern ways of cost sharing. That is because the amount of time that food needs in production phase is very long and costly at the same time. Currently when thinking of a local producer raising pork for example, we identify a production period of around 7 months. Months when the farmer needs to support all costs for food, health and accommodation of the animal. Eventually after 7 months they will sell the product, hopefully with profit, that is to be used to buy another batch of piglets and sustain their growth until the time they can be sold again. 
 
 Considering the aforementioned problems, it is clear there is a lot of space to improve. Agriculture is a sector where informatics and technology didn’t yet boom, and I foresee a bright future in implementing digitalized solutions for food production and distribution. Just like we did with industrial production of clothes and shoes for example. 
+
+### Implementation Details
+
+In order to accommodate the aforementioned problem and address it's needs through an automated solution that works on a distributed ledger, I decided to encapsulate the business logic in a couple of smart contracts that run on Ethereum blockchain.
+Ethereum is a decentralized, open-source blockchain with smart contract functionallity support. It run with the native cryptocurrency called Ether.
+
+Because the maine bottlenack of the problem at hand is the lack of trust between the parties involed in a transaction. i.e:
+    - The consumer does not trust the local producer to deliver the goods eventhough they payed a downpayment;
+    - The local producer does not trust the customer to clear the last payment once the producer has delivered the goods;
+I decided that a blockchain based solution could actually address this matter.
+
+So in the current solution, we can find a couple of smart contracts that interact with each other:
+
+1. Staker.sol
+Is a contract that the local producer would deploy. It is capable to accept an **arbitrary staking amount** of eth, that is retained by the contract until either:
+- a fundraise completion deadline is reached -> in case the *trashold* value is reached the funds raised are moved into an external contract;
+- a withdraw deadline is reached -> users cannot *withdraw* from the commitment of buying the goods they ordered anymore;
+- a trashold is reached -> a trashold that the local producer decieds, that would be the minimum amount for him to start the crop;
+These three parameters can be manually configured by the user of the contract before deployment.
+
+Then it offers functionalities such as:
+- withdraw() -> in case the deadline is not yet reached, a user that has stacked funds inside the contract, can still retrieve his/hers funds back;
+- stake() -> any user can stake an arbitrary amount of eth before the completion deadline is reached;
+- execute() -> that checks the trashold has been reached, if not it sends the funds back to the users that contributed, otherwise it transfers funds in a "vault" contract called the external contract;
