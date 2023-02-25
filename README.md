@@ -86,23 +86,36 @@ Considering the aforementioned problems, it is clear there is a lot of space to 
 ### Implementation Details
 
 In order to accommodate the aforementioned problem and address it's needs through an automated solution that works on a distributed ledger, I decided to encapsulate the business logic in a couple of smart contracts that run on Ethereum blockchain.
-Ethereum is a decentralized, open-source blockchain with smart contract functionallity support. It run with the native cryptocurrency called Ether.
+Ethereum is a decentralized, open-source blockchain with smart contract functionallity support. It runs with the native cryptocurrency called Ether.
 
-Because the maine bottlenack of the problem at hand is the lack of trust between the parties involed in a transaction. i.e:
-    - The consumer does not trust the local producer to deliver the goods eventhough they payed a downpayment;
+Because the main bottlenack of the problem at hand is the lack of trust between the parties involed in a transaction. i.e:
+    - The consumer does not trust the local producer to deliver the goods even though they payed a downpayment;
     - The local producer does not trust the customer to clear the last payment once the producer has delivered the goods;
 I decided that a blockchain based solution could actually address this matter.
 
 So in the current solution, we can find a couple of smart contracts that interact with each other:
 
-1. Staker.sol
+#### 1. Staker.sol
 Is a contract that the local producer would deploy. It is capable to accept an **arbitrary staking amount** of eth, that is retained by the contract until either:
 - a fundraise completion deadline is reached -> in case the *trashold* value is reached the funds raised are moved into an external contract;
 - a withdraw deadline is reached -> users cannot *withdraw* from the commitment of buying the goods they ordered anymore;
-- a trashold is reached -> a trashold that the local producer decieds, that would be the minimum amount for him to start the crop;
-These three parameters can be manually configured by the user of the contract before deployment.
+- a trashold is reached -> a trashold that the local producer sets, that would be the minimum amount for them to start the crop;
+**These three parameters can be manually configured by the user of the contract before deployment.**
 
-Then it offers functionalities such as:
+Then it offers the following main functionalities:
 - withdraw() -> in case the deadline is not yet reached, a user that has stacked funds inside the contract, can still retrieve his/hers funds back;
 - stake() -> any user can stake an arbitrary amount of eth before the completion deadline is reached;
 - execute() -> that checks the trashold has been reached, if not it sends the funds back to the users that contributed, otherwise it transfers funds in a "vault" contract called the external contract;
+
+Apart from these maine methods thare are other helper methods, modifiers and events that are used to check different conditions are met and to log transactions happening on the contract respectively. Some of the modifiers are:
+- claimDeadlineReached -> checks if the deadline for the funds to be moved to the external contract is met;
+- tresholdReached -> checks that the desired treshold has been met;
+
+#### 2. ExternalCotnract.sol [*ownable* smart contract that extends open zeppelin standard]
+Owner of this contract should always be the local producer, because retrieving funds from it are restrited to the owner only.
+Is a contract that will recieve the funds gethered in the Staker.sol smart contract, and it is under the ownership of the local producer.
+Using methods of this contract, the local producer will be able to retrieve downpayments that customers have payed, that are unlocked lineary based on the time that passed since the campain has started.
+
+This contract offers two main functionallities:
+- complete -> that is called by the staker contract in order to move funds to the external contract, when this method runs, it also initialisez constants corresponding to the amount of fudns to be unlocked at different times left until the end of the campaign;
+- retrieveFunds -> that can only be called by the owner and based on the timestamp of the transaction an current block time, it computes the amount the producer should have.
