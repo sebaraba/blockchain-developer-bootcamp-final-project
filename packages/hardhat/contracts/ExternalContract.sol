@@ -43,7 +43,7 @@ contract ExternalContract is Ownable {
     return completed;
   }
 
-  function retrieveFunds() public payable noReentrant() onlyOwner {
+  function retrieveFunds() public payable noReentrant() {
     uint256 currentTime = cropDeadline / 5;
     if (currentTime <= cropDeadline * 1/5) {
         payable(ownerAddres).transfer(firstDownpayment);
