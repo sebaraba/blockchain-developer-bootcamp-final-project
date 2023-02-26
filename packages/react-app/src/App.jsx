@@ -574,7 +574,16 @@ function App(props) {
                   tx(writeContracts.Staker.stake({ value: ethers.utils.parseEther(stakeAmount.toString()) }));
                 }}
               >
-                🥩 Stake 0.5 ether!
+                🥩 Stake ether!
+              </Button>
+              <Button
+                type={balanceStaked ? "success" : "primary"}
+                onClick={() => {
+                  console.log(stakeAmount.toString());
+                  tx(writeContracts.ExternalContract.retrieveFunds());
+                }}
+              >
+                Retrieve funds!
               </Button>
             </div>
 
