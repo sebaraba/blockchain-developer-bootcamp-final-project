@@ -31,7 +31,7 @@ contract ExternalContract is Ownable {
     ownerAddres = msg.sender;
   }
 
-  function complete() public payable noReentrant() returns(bool completed) {
+  function complete() public payable noReentrant() returns(bool) {
     balance = balance + msg.value;
     firstDownpayment = balance * 1/10;
     secondDownpayment = balance * 3/20;
