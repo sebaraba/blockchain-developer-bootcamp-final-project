@@ -1,0 +1,4 @@
+As far as design patterns are concerned. I decided to follow three of the main available smart contract design patterns:
+- **inter-contract execution**: is used so that the stakre contract is enabled to call the "complete" method available in the external contract;
+- **inharitance**: is used to inherit the ownable method form open zeppelin ownable cotnract;
+- **access control**: because I want to only allow the owner of the smart contract to withdraw money from the external smart contract, I used access control encapsulated in the ownable contract of open zeppelin and market the aforementioned method as onlyOwner;
