@@ -30,8 +30,6 @@ contract Staker {
     uint256 timeRemaining = withdrawalPeriodLeft();
     if( requiredReached ) {
       require(timeRemaining == 0, "Withdrawal period is not reached yet");
-    } else {
-      require(timeRemaining > 0, "Withdrawal period has been reached");
     }
     _;
   }
