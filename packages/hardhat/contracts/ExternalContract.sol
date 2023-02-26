@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract ExternalContract is Ownable {
 
+  bool internal locked;
   bool public completed;
   address private ownerAddres;
   uint256 public constant threshold = 1 ether;
@@ -19,11 +20,18 @@ contract ExternalContract is Ownable {
   event FundsWithdraw(address indexed sender, uint256 amount, string paymentBatch);
   event CompletedContract(uint256 totalBalance, uint256 firstDownpayment, uint256 secondDownpayment, uint256 thirdDownpayment, uint256 finalPayment);
 
+  modifier noReentrant() {
+    require(!locked, "No re-entrancy");
+    locked = true;
+    _;
+    locked = false;
+  }
+
   constructor () {
     ownerAddres = msg.sender;
   }
 
-  function complete() public payable returns(bool completed) {
+  function complete() public payable noReentrant() returns(bool completed) {
     balance = balance + msg.value;
     firstDownpayment = balance * 1/10;
     secondDownpayment = balance * 3/20;
@@ -35,7 +43,7 @@ contract ExternalContract is Ownable {
     return completed;
   }
 
-  function retrieveFunds() public payable onlyOwner {
+  function retrieveFunds() public payable noReentrant() onlyOwner {
     uint256 currentTime = cropDeadline / 5;
     if (currentTime <= cropDeadline * 1/5) {
         payable(ownerAddres).transfer(firstDownpayment);
