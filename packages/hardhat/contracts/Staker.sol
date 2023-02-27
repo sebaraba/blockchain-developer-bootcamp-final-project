@@ -13,8 +13,8 @@ contract Staker {
   uint256 public constant threshold = 1 ether;
 
   uint256 public constant rewardRatePerBlock = 0.1 ether;
-  uint256 public withdrawalDeadline = block.timestamp + 120 seconds;
-  uint256 public claimDeadline = block.timestamp + 220 seconds;
+  uint256 public withdrawalDeadline = block.timestamp + 30 seconds;
+  uint256 public claimDeadline = block.timestamp + 60 seconds;
   uint256 public currentBlock = 0;
 
   // Events
@@ -99,6 +99,14 @@ contract Staker {
     require(contractBalance > threshold, "The expected amount of eth has not been raised!");
     
     externalContract.complete{value: address(this).balance}();
+  }
+
+    /*
+    Allows any user to repatriate "unproductive" funds that are left in the staking contract
+    past the defined withdrawal period
+  */
+  function retrieve() public claimDeadlineReached(true) {
+    externalContract.retrieveFunds();
   }
 
   /*
