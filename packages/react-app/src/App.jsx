@@ -240,6 +240,12 @@ function App(props) {
   const balanceStaked = useContractReader(readContracts, "Staker", "balances", [address]);
   console.log("💸 balanceStaked:", balanceStaked);
 
+  // ** keep track of a variable from the contract in the local React state:
+  const balanceLeft = useContractReader(readContracts, "ExternalContract", "balance");
+  const initialContractvalue = useContractReader(readContracts, "ExternalContract", "initialContractValue");
+  const balanceRetrieved = (initialContractvalue - balanceLeft) / 100000000000000000;
+  console.log("💸 balanceRetrieved:", balanceRetrieved, balanceLeft, initialContractvalue, address);
+
   // ** 📟 Listen for broadcast events
   const stakeEvents = useEventListener(readContracts, "Staker", "Stake", localProvider, 1);
   console.log("📟 stake events:", stakeEvents);
@@ -534,6 +540,13 @@ function App(props) {
               <Balance balance={balanceStaked} fontSize={64} />
             </div>
 
+            <Divider />
+
+            <div style={{ padding: 8, fontWeight: "bold" }}>
+              <div>ETH Retrieved by the owner:</div>
+              {/* <Balance balance={balanceRetrieved} fontSize={64} /> */}
+              <div fontSize={64} > {balanceRetrieved} </div>
+            </div>
             <div style={{ padding: 8 }}>
               <Button
                 type={"default"}
@@ -576,14 +589,15 @@ function App(props) {
               >
                 🥩 Stake ether!
               </Button>
+            </div>
+            <div>
               <Button
-                type={balanceStaked ? "success" : "primary"}
-                onClick={() => {
-                  console.log(stakeAmount.toString());
-                  tx(writeContracts.ExternalContract.retrieveFunds());
-                }}
-              >
-                Retrieve funds!
+                  type={balanceStaked ? "success" : "primary"}
+                  onClick={() => {
+                    tx(writeContracts.Staker.retrieve({}));
+                  }}
+                >
+                  🏧 Retrieve funds!
               </Button>
             </div>
 
