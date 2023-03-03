@@ -119,3 +119,10 @@ Using methods of this contract, the local producer will be able to retrieve down
 This contract offers two main functionallities:
 - complete -> that is called by the staker contract in order to move funds to the external contract, when this method runs, it also initialisez constants corresponding to the amount of fudns to be unlocked at different times left until the end of the campaign;
 - retrieveFunds -> that can only be called by the owner and based on the timestamp of the transaction an current block time, it computes the amount the producer should have.
+
+
+## Deployed contracts:
+
+Contracts have been deployed using Remix on Goerli network:
+Staker.sol -> 0xD7D4F2FC3193E0D13Bc6E2C288A29d7D90aA5CC0
+ExternalContract.sol -> 0x3e4a3e6c3b446fD7a59c3dAdc2ba0db9a80Fec62
