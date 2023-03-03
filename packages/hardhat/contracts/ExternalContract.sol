@@ -3,6 +3,12 @@ pragma solidity 0.8.4;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+/**
+ * @author  Raba Sebastian
+ * @title   ExternalContract
+ * @dev     Used to store the funds after the kickstarter campaign is done and to retrieve funds by the owner only
+ */
+
 contract ExternalContract is Ownable {
 
   bool internal locked;
@@ -32,6 +38,9 @@ contract ExternalContract is Ownable {
     uint256 finalPayment
     );
 
+  /**
+   * @dev     Blocks a function to be called before it finishes executing
+   */
   modifier noReentrant() {
     require(!locked, "No re-entrancy");
     locked = true;
@@ -43,6 +52,10 @@ contract ExternalContract is Ownable {
     ownerAddres = msg.sender;
   }
 
+  /**
+   * @dev     Called for repatriating funds from Staker contract, it initialisez all values for 
+   *          retrieving funds out of the contract
+   */
   function complete() public payable noReentrant() returns(bool) {
     balance = balance + msg.value;
     initialContractValue = initialContractValue + msg.value;
@@ -56,37 +69,41 @@ contract ExternalContract is Ownable {
     return completed;
   }
 
-  function retrieveFunds() public payable noReentrant() {
+  /**
+   * @dev     Is used to retrieve money out of the smart contract by the owner of the cotnract.
+   *          Who is the local producer in our case
+   */
+  function retrieveFunds() public payable noReentrant() onlyOwner {
     uint256 currentTime = block.timestamp;
     if (currentTime <= cropDeadline - timeUnit * 4 ) {
-        emit FundsWithdraw(ownerAddres, firstDownpayment, 'FirstDownpayment');
         payable(ownerAddres).transfer(firstDownpayment);
         balance = balance - firstDownpayment;
         firstDownpayment = 0;
+        emit FundsWithdraw(ownerAddres, firstDownpayment, 'FirstDownpayment');
     } else if (currentTime <= cropDeadline - timeUnit * 2) {
-        emit FundsWithdraw(ownerAddres, 1, 'SecondDownpayment');
         uint256 totalAmount = firstDownpayment + secondDownpayment;
         payable(ownerAddres).transfer(totalAmount);
         balance = balance - totalAmount;
         firstDownpayment = 0;
         secondDownpayment = 0;
+        emit FundsWithdraw(ownerAddres, totalAmount, 'SecondDownpayment');
     } else if (currentTime <= cropDeadline - timeUnit) {
-        emit FundsWithdraw(ownerAddres, 2, 'ThirdDownpayment');
         uint256 totalAmount = firstDownpayment + secondDownpayment + thirdDownpayment;
         payable(ownerAddres).transfer(totalAmount);
         balance = balance - totalAmount;
         firstDownpayment = 0;
         secondDownpayment = 0;
         thirdDownpayment = 0;
+        emit FundsWithdraw(ownerAddres, totalAmount, 'ThirdDownpayment');
     } else if (currentTime >= cropDeadline) {
         uint256 totalAmount = finalPayment + firstDownpayment + secondDownpayment + thirdDownpayment;
-        emit FundsWithdraw(ownerAddres, totalAmount, 'FinalPayment');
         payable(ownerAddres).transfer(totalAmount);
         balance = balance - totalAmount;
         firstDownpayment = 0;
         secondDownpayment = 0;
         thirdDownpayment = 0;
         finalPayment = 0;
+        emit FundsWithdraw(ownerAddres, totalAmount, 'FinalPayment');
     }
   }
 }
