@@ -4,6 +4,11 @@ pragma solidity 0.8.4;
 import "hardhat/console.sol";
 import "./ExternalContract.sol";
 
+/**
+ * @author  Raba Sebastian
+ * @title   Staker Contract
+ * @notice  collects funds staked on the platform
+ */
 contract Staker {
 
   ExternalContract public externalContract;
@@ -23,9 +28,10 @@ contract Staker {
   event Execute(address indexed sender, uint256 amount);
 
   // Modifiers
-  /*
-    Checks if the withdrawal period has been reached or not
-  */
+  /**
+   * @dev     Checks if the withdrawal period has been reached or not
+   * @param   requiredReached  bool
+   */
   modifier withdrawalDeadlineReached( bool requiredReached ) {
     uint256 timeRemaining = withdrawalPeriodLeft();
     if( requiredReached ) {
@@ -34,9 +40,10 @@ contract Staker {
     _;
   }
 
-  /*
-    Checks if the claim period has ended or not
-  */
+  /**
+   * @dev     Checks if the claim period has ended or not
+   * @param   requiredReached  bool
+   */
   modifier claimDeadlineReached( bool requiredReached ) {
     uint256 timeRemaining = claimPeriodLeft();
     if( requiredReached ) {
@@ -47,15 +54,18 @@ contract Staker {
     _;
   }
 
-  /*
-    Requires that the contract only be completed once!
-  */
+  /**
+   * @dev     Requires that the contract only be completed once!
+   */
   modifier notCompleted() {
     bool completed = externalContract.completed();
     require(!completed, "Stake already completed!");
     _;
   }
 
+  /**
+   * @dev     Checks arbitrary trashold has been reached
+   */
   modifier tresholdReached() {
     bool treshHoldReached = address(this).balance > threshold;
     require(treshHoldReached, "Trashold not reached");
@@ -66,34 +76,32 @@ contract Staker {
       externalContract = ExternalContract(externalContractAddress);
   }
 
-  //Staking function responsible for staked ETH
+  /**
+   * @dev     Staking function responsible for staked ETH
+   */
   function stake() public payable withdrawalDeadlineReached(false) claimDeadlineReached(false) {
     balances[msg.sender] = balances[msg.sender] + msg.value;
     depositTimestamps[msg.sender] = block.timestamp;
     emit Stake(msg.sender, msg.value);
   }
 
-  /*
-    Withdraw function for a user to remove their staked ETH inclusive
-    of both principal and any accrued interest
-  */
+  /**
+   * @dev     Withdraw function for a user to remove their staked ETH inclusive
+              of both principal and any accrued interest
+   */
   function withdraw() public withdrawalDeadlineReached(true) notCompleted () {
     require(balances[msg.sender] > 0, "You have nothing to withdraw!");
     uint256 individualBalance = balances[msg.sender];
     balances[msg.sender] = 0;
 
-    //TODO: discard for now as no reward mechanism has been implemented
-    //(bool sent, bytes memory data) = msg.sender.call{value: individualBalancesRewards}("");
-    //uint256 individualBalancesRewards = individualBalance + ((block.timestamp - depositTimestamps[msg.sender]) * rewardRatePerBlock);
-
     (bool sent,) = msg.sender.call{value: individualBalance}("");
     require(sent, "There was an error in the attempt to withdraw");
   }
 
-  /*
-    Allows any user to repatriate "unproductive" funds that are left in the staking contract
-    past the defined withdrawal period
-  */
+  /**
+   * @dev     Allows any user to repatriate "unproductive" funds that are left in the staking contract
+              past the defined withdrawal period
+   */
   function execute() public claimDeadlineReached(true) notCompleted tresholdReached {
     uint256 contractBalance = address(this).balance;
     require(contractBalance > threshold, "The expected amount of eth has not been raised!");
@@ -101,17 +109,16 @@ contract Staker {
     externalContract.complete{value: address(this).balance}();
   }
 
-    /*
-    Allows any user to repatriate "unproductive" funds that are left in the staking contract
-    past the defined withdrawal period
-  */
+  /**
+   * @dev     Allows user to retrieve funds from external smart contract
+   */
   function retrieve() public claimDeadlineReached(true) {
     externalContract.retrieveFunds();
   }
-
-  /*
-    READ-ONLY function to calculate the time remaining before the minimum staking period has passed
-  */  
+  
+  /**
+   * @dev     READ-ONLY function to calculate the time remaining before the minimum staking period has passed
+   */
   function withdrawalPeriodLeft() public view returns(uint256 withdrawalTimeLeft) {
     if( block.timestamp >= withdrawalDeadline) {
       return(0);
@@ -120,9 +127,9 @@ contract Staker {
     }
   }
 
-  /*
-    READ-ONLY function to calculate the time remaining before the minimum staking period has passed
-  */
+  /**
+   * @dev     READ-ONLY function to calculate the time remaining before the minimum staking period has passed
+   */
   function claimPeriodLeft() public view returns(uint256 claimTimeLeft) {
     if( block.timestamp >= claimDeadline) {
       return(0);
@@ -131,9 +138,9 @@ contract Staker {
     }
   }
 
-  /*
-  Time to "kill-time" on our local testnet
-  */
+  /**
+   * @dev     Time to "kill-time" on our local testnet
+   */
   function killTime() public {
     currentBlock = block.timestamp;
   }
